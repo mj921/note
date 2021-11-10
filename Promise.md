@@ -4,15 +4,15 @@ function MyPromise (executor) {
   const resolve = function(result){
     this.promiseState = "fulfilled";
     this.result = result;
-    this.handleList.forEach(resolveHandle => {
-      resolveHandle(this.promiseState, result);
+    this.handleList.forEach(handle => {
+      handle(this.promiseState, result);
     })
   }
   const reject = function(error) {
     this.promiseState = "rejected";
     this.result = error;
-    this.handleList.forEach(resolveHandle => {
-      resolveHandle(this.promiseState, error);
+    this.handleList.forEach(handle => {
+      handle(this.promiseState, error);
     })
   }
   this.handleList = []; // 处理队列
@@ -20,19 +20,19 @@ function MyPromise (executor) {
   this.promiseState = "pending";
   executor(resolve.bind(this), reject.bind(this));
 }
-MyPromise.prototype.then = function(resolveHandle, rejectHandle) {
+MyPromise.prototype.then = function(onResolved, onRejected) {
   if (this.promiseState === "pending") {
     return new MyPromise((resolve, reject) => {
       const handle = (promiseState, result) => {
         if (promiseState === "fulfilled") {
           try {
-            resolve(resolveHandle(result));
+            resolve(onResolved(result));
           } catch(e) {
             reject(e);
           }
         } else {
           try {
-            resolve(resolveHandle(result));
+            resolve(onResolved(result));
           } catch(e) {
             reject(e);
           }
@@ -42,26 +42,26 @@ MyPromise.prototype.then = function(resolveHandle, rejectHandle) {
     })
   } else if (this.promiseState === "fulfilled") {
       try {
-          return MyPromise.resolve(resolveHandle(this.result));
+          return MyPromise.resolve(onResolved(this.result));
       } catch(e) {
           return MyPromise.reject(e);
       }
       
   } else {
       try {
-          return MyPromise.resolve(rejectHandle(this.result));
+          return MyPromise.resolve(onRejected(this.result));
       } catch(e) {
           return MyPromise.reject(e);
       }
   }
 }
-MyPromise.prototype.catch = function(rejectHandle) {
+MyPromise.prototype.catch = function(onRejected) {
   if (this.promiseState === "pending") {
     return new MyPromise((resolve, reject) => {
       const handle = (promiseState, result) => {
         if (promiseState === "rejected") {
           try {
-            resolve(rejectHandle(result));
+            resolve(onRejected(result));
           } catch(e) {
             reject(e);
           }
@@ -73,7 +73,7 @@ MyPromise.prototype.catch = function(rejectHandle) {
     })
   } else if (this.promiseState === "rejected") {
       try {
-          return MyPromise.resolve(rejectHandle(this.result));
+          return MyPromise.resolve(onRejected(this.result));
       } catch(e) {
           return MyPromise.reject(e);
       }
@@ -81,12 +81,12 @@ MyPromise.prototype.catch = function(rejectHandle) {
       return MyPromise.resolve(this.result);
   }
 }
-MyPromise.prototype.finally = function(finallyHandle) {
+MyPromise.prototype.finally = function(onFinally) {
   if (this.promiseState === "pending") {
     return new MyPromise((resolve, reject) => {
       const handle = (promiseState, result) => {
         try {
-          finallyHandle()
+          onFinally()
           resolve(result);
         } catch(e) {
           reject(e);
@@ -95,7 +95,7 @@ MyPromise.prototype.finally = function(finallyHandle) {
       this.handleList.push(handle)
     })
   } else {
-    finallyHandle();
+    onFinally();
     return MyPromise.resolve(this.result);
   }
 }
