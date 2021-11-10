@@ -266,3 +266,41 @@ function concat (arr, ...values) {
   return newArr;
 }
 ```
+### apply、call、bind
+## apply
+``` javascript
+function apply (fn, context, args) {
+  const self = context ? Object(context) : window;
+  args = args || [];
+  const key = Symbol('key');
+  self[key] = fn;
+  const res = self[key](...args);
+  delete self[key];
+  return res;
+}
+```
+## call
+``` javascript
+function call (fn, context, ...args) {
+  const self = context ? Object(context) : window;
+  const key = Symbol('key');
+  self[key] = fn;
+  const res = self[key](...args);
+  delete self[key];
+  return res;
+}
+```
+## bind
+``` javascript
+function bind (fn, context, ...args) {
+  const self = context ? Object(context) : window;
+  if (args.length === 1 && args[0] instanceof Array) {
+    args = args[0];
+  }
+  const key = Symbol('key');
+  self[key] = fn;
+  return function(...args1){
+    self[key](...args, ...args1);
+  };
+}
+```
