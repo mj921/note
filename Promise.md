@@ -50,16 +50,24 @@ MyPromise.prototype.then = function(onResolved, onRejected) {
     })
   } else if (this.promiseState === "fulfilled") {
       try {
+        if (onResolved) {
           return MyPromise.resolve(onResolved(this.result));
+        } else {
+          MyPromise.resolve(this.result);
+        }
       } catch(e) {
-          return MyPromise.reject(e);
+        return MyPromise.reject(e);
       }
       
   } else {
       try {
+        if (onRejected) {
           return MyPromise.resolve(onRejected(this.result));
+        } else {
+          return MyPromise.reject(this.result);
+        }
       } catch(e) {
-          return MyPromise.reject(e);
+        return MyPromise.reject(e);
       }
   }
 }
@@ -71,7 +79,7 @@ MyPromise.prototype.catch = function(onRejected) {
           try {
             if (onRejected) {
               resolve(onRejected(result));
-            } else if {
+            } else {
               reject(result);
             }
           } catch(e) {
@@ -85,9 +93,13 @@ MyPromise.prototype.catch = function(onRejected) {
     })
   } else if (this.promiseState === "rejected") {
       try {
+        if (onRejected) {
           return MyPromise.resolve(onRejected(this.result));
+        } else {
+          return MyPromise.reject(result);
+        }
       } catch(e) {
-          return MyPromise.reject(e);
+        return MyPromise.reject(e);
       }
   } else {
       return MyPromise.resolve(this.result);
