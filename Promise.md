@@ -134,67 +134,95 @@ MyPromise.reject = function(error) {
   })
 }
 MyPromise.all = function(promises) {
+  if (!promises || !(promises instanceof Array)) return MyPromise.reject(new TypeError(promises + " is not iterable"));
   return new MyPromise((resolve, reject) => {
     const results = [];
     let count = 0;
     for (let i = 0; i < promises.length; i++) {
-      promises[i].then(result => {
-        results[i] = result;
+      if (promises[i] instanceof MyPromise) {
+        promises[i].then(result => {
+          results[i] = result;
+          count++;
+          if (count === promises.length) {
+            resolve(results);
+          }
+        }, error => {
+          reject(error);
+        })
+      } else {
+        results[i] = promises[i];
         count++;
         if (count === promises.length) {
           resolve(results);
         }
-      }, error => {
-        reject(error);
-      })
+      }
     }
   })
 }
 MyPromise.allSettled = function(promises) {
+  if (!promises || !(promises instanceof Array)) return MyPromise.reject(new TypeError(promises + " is not iterable"));
   return new MyPromise((resolve, reject) => {
     const results = [];
     let count = 0;
     for (let i = 0; i < promises.length; i++) {
-      promises[i].then(result => {
-        results[i] = { status: "fulfilled", value: result };
+      if (promises[i] instanceof MyPromise) {
+        promises[i].then(result => {
+          results[i] = { status: "fulfilled", value: result };
+          count++;
+          if (count === promises.length) {
+            resolve(results);
+          }
+        }, error => {
+          results[i] = { status: "rejected", reason: error };
+          count++;
+          if (count === promises.length) {
+            resolve(results);
+          }
+        })
+      } else {
+        results[i] = { status: "fulfilled", value: promises[i] };
         count++;
         if (count === promises.length) {
           resolve(results);
         }
-      }, error => {
-        results[i] = { status: "rejected", reason: error };
-        count++;
-        if (count === promises.length) {
-          resolve(results);
-        }
-      })
+      }
     }
   })
 }
 MyPromise.any = function(promises) {
+  if (!promises || !(promises instanceof Array)) return MyPromise.reject(new TypeError(promises + " is not iterable"));
   return new MyPromise((resolve, reject) => {
     let count = 0;
     for (let i = 0; i < promises.length; i++) {
-      promises[i].then(result => {
-        resolve(result);
-      }, error => {
-        count++;
-        if (count === promises.length) {
-          reject(new Error("All promises were rejected"));
-        }
-      })
+      if (promises[i] instanceof MyPromise) {
+        promises[i].then(result => {
+          resolve(result);
+        }, error => {
+          count++;
+          if (count === promises.length) {
+            reject(new Error("All promises were rejected"));
+          }
+        })
+      } else {
+        resolve(promises[i]);
+      }
     }
   })
 }
 MyPromise.race = function(promises) {
+  if (!promises || !(promises instanceof Array)) return MyPromise.reject(new TypeError(promises + " is not iterable"));
   return new MyPromise((resolve, reject) => {
     let count = 0;
     for (let i = 0; i < promises.length; i++) {
-      promises[i].then(result => {
-        resolve(result);
-      }, error => {
-        reject(error);
-      })
+      if (promises[i] instanceof MyPromise) {
+        promises[i].then(result => {
+          resolve(result);
+        }, error => {
+          reject(error);
+        })
+      } else {
+        resolve(promises[i]);
+      }
     }
   })
 }
