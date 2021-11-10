@@ -26,13 +26,21 @@ MyPromise.prototype.then = function(onResolved, onRejected) {
       const handle = (promiseState, result) => {
         if (promiseState === "fulfilled") {
           try {
-            resolve(onResolved(result));
+            if (onResolved) {
+              resolve(onResolved(result));
+            } else {
+              resolve(result);
+            }
           } catch(e) {
             reject(e);
           }
         } else {
           try {
-            resolve(onResolved(result));
+            if (onRejected) {
+              resolve(onRejected(result));
+            } else if {
+              reject(result);
+            }
           } catch(e) {
             reject(e);
           }
@@ -61,7 +69,11 @@ MyPromise.prototype.catch = function(onRejected) {
       const handle = (promiseState, result) => {
         if (promiseState === "rejected") {
           try {
-            resolve(onRejected(result));
+            if (onRejected) {
+              resolve(onRejected(result));
+            } else if {
+              reject(result);
+            }
           } catch(e) {
             reject(e);
           }
