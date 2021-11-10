@@ -110,7 +110,7 @@ MyPromise.prototype.finally = function(onFinally) {
     return new MyPromise((resolve, reject) => {
       const handle = (promiseState, result) => {
         try {
-          onFinally()
+          onFinally && onFinally()
           resolve(result);
         } catch(e) {
           reject(e);
@@ -119,7 +119,7 @@ MyPromise.prototype.finally = function(onFinally) {
       this.handleList.push(handle)
     })
   } else {
-    onFinally();
+    onFinally && onFinally();
     return MyPromise.resolve(this.result);
   }
 }
