@@ -38,7 +38,7 @@ MyPromise.prototype.then = function(onResolved, onRejected) {
           try {
             if (onRejected) {
               resolve(onRejected(result));
-            } else if {
+            } else {
               reject(result);
             }
           } catch(e) {
