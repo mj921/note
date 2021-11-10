@@ -266,8 +266,8 @@ function concat (arr, ...values) {
   return newArr;
 }
 ```
-### apply、call、bind
-## apply
+## apply、call、bind
+### apply
 ``` javascript
 function apply (fn, context, args) {
   const self = context ? Object(context) : window;
@@ -279,7 +279,7 @@ function apply (fn, context, args) {
   return res;
 }
 ```
-## call
+### call
 ``` javascript
 function call (fn, context, ...args) {
   const self = context ? Object(context) : window;
@@ -290,7 +290,7 @@ function call (fn, context, ...args) {
   return res;
 }
 ```
-## bind
+### bind
 ``` javascript
 function bind (fn, context, ...args) {
   const self = context ? Object(context) : window;
@@ -304,3 +304,5 @@ function bind (fn, context, ...args) {
   };
 }
 ```
+## Promise
+[链接](./Promise.md)
