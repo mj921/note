@@ -306,3 +306,56 @@ function bind (fn, context, ...args) {
 ```
 ## Promise
 [链接](./Promise.md)
+
+## 数字转中文
+```javascript
+function numToChinese(num) {
+  const numList = [
+    "零",
+    "一",
+    "二",
+    "三",
+    "四",
+    "五",
+    "六",
+    "七",
+    "八",
+    "九",
+  ];
+  if (num < 10) {
+    return numList[num];
+  } else if (num < 20) {
+    return `十${num % 10 > 0 ? numList[num % 10] : ""}`;
+  } else if (num < 100) {
+    return `${numList[Math.floor(num / 10)]}十${
+      num % 10 > 0 ? numList[num % 10] : ""
+    }`;
+  } else if (num < 1000) {
+    return `${numList[Math.floor(num / 100)]}百${
+      num % 100 > 10
+        ? numToChinese(num % 100)
+        : num % 100 === 10
+        ? "一十"
+        : ("零" + numList[num % 100]).replace(/零{2,}/, '')
+    }`;
+  } else if (num < 10000) {
+    return `${numList[Math.floor(num / 1000)]}千${
+      num % 1000 > 100
+        ? numToChinese(num % 1000)
+        : ("零" + numToChinese(num % 1000)).replace(/零{2,}/, '')
+    }`;
+  } else if (num < 100000000) {
+    return `${numToChinese(Math.floor(num / 10000))}万${
+      num % 10000 > 1000
+        ? numToChinese(num % 10000)
+        : ("零" + numToChinese(num % 10000)).replace(/零{2,}/, '')
+    }`;
+  } else {
+    return `${numToChinese(Math.floor(num / 100000000))}亿${
+      num % 100000000 > 10000000
+        ? numToChinese(num % 100000000)
+        : ("零" + numToChinese(num % 100000000)).replace(/零{2,}/, '')
+    }`;
+  }
+}
+```
